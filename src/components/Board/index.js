@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Alert } from 'react-native';
+import { ScrollView, View, Alert } from 'react-native';
 
 import { buildGame } from '../../lib/boardBuilder';
+import { positionsToRecursivelyReveal } from '../../lib/utils';
 import Cell from '../Cell';
 
 import styles from './styles';
@@ -23,21 +24,6 @@ const Board = () => {
     }
   };
 
-  const handleCellLongPress = (x, y) => {
-    const pressedCell = cells[y][x];
-    if (pressedCell.revealed) {
-      return;
-    }
-
-    setCells((prevCells) =>
-      prevCells.map((row, j) =>
-        row.map((cell, i) =>
-          i === x && j === y ? { ...cell, flagged: true } : cell
-        )
-      )
-    );
-  };
-
   const revealAllCells = () => {
     setCells((prevCells) =>
       prevCells.map((row) => row.map((cell) => ({ ...cell, revealed: true })))
@@ -45,30 +31,42 @@ const Board = () => {
   };
 
   const revealCell = (x, y) => {
-    setCells((prevCells) =>
-      prevCells.map((row, j) =>
-        row.map((cell, i) =>
-          i === x && j === y ? { ...cell, revealed: true } : cell
-        )
-      )
-    );
+    const positionsToReveal =
+      cells[y][x].bombsAround === 0
+        ? positionsToRecursivelyReveal(
+            x,
+            y,
+            cells.map((row) => row.map((cell) => ({ ...cell })))
+          )
+        : [[x, y]];
+
+    setCells((prevCells) => {
+      const cellsCopy = prevCells.map((row) =>
+        row.map((cell) => ({ ...cell }))
+      );
+      positionsToReveal.map(
+        ([posX, posY]) => (cellsCopy[posY][posX].revealed = true)
+      );
+      return cellsCopy;
+    });
   };
 
   return (
-    <View style={styles.container}>
-      {cells.map((row, rowNumber) => (
-        <View style={styles.row} key={rowNumber}>
-          {row.map((cell) => (
-            <Cell
-              key={`cell-${cell.x}-${cell.y}`}
-              cell={cell}
-              onPress={handleCellPress}
-              onLongPress={handleCellLongPress}
-            />
-          ))}
-        </View>
-      ))}
-    </View>
+    <ScrollView style={styles.container} horizontal>
+      <ScrollView style={styles.container}>
+        {cells.map((row, rowNumber) => (
+          <View style={styles.row} key={rowNumber}>
+            {row.map((cell) => (
+              <Cell
+                key={`cell-${cell.x}-${cell.y}`}
+                cell={cell}
+                onPress={handleCellPress}
+              />
+            ))}
+          </View>
+        ))}
+      </ScrollView>
+    </ScrollView>
   );
 };
 

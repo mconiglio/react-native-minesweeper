@@ -22,7 +22,6 @@ const buildBoard = () => {
         hasBomb: false,
         bombsAround: 0,
         revealed: false,
-        flagged: false,
       };
     }
   }

@@ -19,3 +19,29 @@ export const adjacentPositions = (x, y) => {
 
   return positions;
 };
+
+export const positionsToRecursivelyReveal = (x, y, board) => {
+  if (board[y][x].visited) {
+    return [];
+  }
+
+  board[y][x].visited = true;
+
+  if (board[y][x].bombsAround > 0) {
+    return [[x, y]];
+  }
+
+  const neighbors = adjacentPositions(x, y);
+  const positionsToVisit = neighbors.filter(
+    ([adjX, adjY]) =>
+      !board[adjY][adjX].visited &&
+      !board[adjY][adjX].revealed &&
+      !board[adjY][adjX].hasBomb
+  );
+
+  return positionsToVisit.reduce(
+    (positionsToReveal, [adjX, adjY]) =>
+      positionsToReveal.concat(positionsToRecursivelyReveal(adjX, adjY, board)),
+    [[x, y]]
+  );
+};
