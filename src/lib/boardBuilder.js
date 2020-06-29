@@ -32,6 +32,15 @@ const buildBoard = () => {
 
 const plantBombs = (board) => {
   // TODO: make pure function
+  if (
+    BoardConstants.bombsCount < 1 ||
+    BoardConstants.rows * BoardConstants.columns <= BoardConstants.bombsCount
+  ) {
+    throw new Error(
+      'Bombs count should be a positive number lower than the available cells count'
+    );
+  }
+
   let bombsPlanted = 0;
 
   while (bombsPlanted < BoardConstants.bombsCount) {
