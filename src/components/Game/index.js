@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import { SafeAreaView, View } from 'react-native';
 
 import Board from '../Board';
 import ResultModal from '../ResultModal';
@@ -91,16 +91,21 @@ const Game = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Board
-        cells={cells}
-        onCellPress={handleCellPress}
-        onCellLongPress={handleCellLongPress}
-      />
-      {gameStatus.ended && (
-        <ResultModal gameWon={gameStatus.won} onRetryPress={handleRetryPress} />
-      )}
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Board
+          cells={cells}
+          onCellPress={handleCellPress}
+          onCellLongPress={handleCellLongPress}
+        />
+        {gameStatus.ended && (
+          <ResultModal
+            gameWon={gameStatus.won}
+            onRetryPress={handleRetryPress}
+          />
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 
