@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View } from 'react-native';
+import React, { useState, useEffect, useMemo } from 'react';
+import { SafeAreaView, View, Text } from 'react-native';
 
 import Board from '../Board';
 import ResultModal from '../ResultModal';
@@ -13,6 +13,10 @@ import styles from './styles';
 const Game = () => {
   const [gameStatus, setGameStatus] = useState({ ended: false, won: false });
   const [cells, setCells] = useState(buildGame());
+  const remainingBombs = useMemo(() => {
+    const flaggedCells = cells.flat().filter((cell) => cell.flagged);
+    return BoardConstants.bombsCount - flaggedCells.length;
+  }, [cells]);
 
   useEffect(() => {
     let revealedCells = 0;
@@ -29,34 +33,10 @@ const Game = () => {
       revealedCells ===
       BoardConstants.columns * BoardConstants.rows - BoardConstants.bombsCount
     ) {
-      revealAllCells();
       setGameStatus({ ended: true, won: true });
+      revealAllCells();
     }
   }, [cells]);
-
-  const handleCellPress = (x, y) => {
-    const pressedCell = cells[y][x];
-    if (pressedCell.revealed) {
-      return;
-    }
-
-    if (pressedCell.hasBomb) {
-      revealAllCells();
-      setGameStatus({ ended: true, won: false });
-    } else {
-      revealCell(x, y);
-    }
-  };
-
-  const handleCellLongPress = (x, y) => {
-    setCells((prevCells) =>
-      prevCells.map((row) =>
-        row.map((cell) =>
-          cell.x === x && cell.y === y ? { ...cell, flagged: true } : cell
-        )
-      )
-    );
-  };
 
   const revealAllCells = () => {
     setCells((prevCells) =>
@@ -85,6 +65,30 @@ const Game = () => {
     });
   };
 
+  const handleCellPress = (x, y) => {
+    const pressedCell = cells[y][x];
+    if (pressedCell.revealed) {
+      return;
+    }
+
+    if (pressedCell.hasBomb) {
+      setGameStatus({ ended: true, won: false });
+      revealAllCells();
+    } else {
+      revealCell(x, y);
+    }
+  };
+
+  const handleCellLongPress = (x, y) => {
+    setCells((prevCells) =>
+      prevCells.map((row) =>
+        row.map((cell) =>
+          cell.x === x && cell.y === y ? { ...cell, flagged: true } : cell
+        )
+      )
+    );
+  };
+
   const handleRetryPress = () => {
     setGameStatus({ ended: false, won: false });
     setCells(buildGame());
@@ -93,6 +97,11 @@ const Game = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+        <View style={styles.remainingBombsContainer}>
+          <Text style={styles.remainingBombs}>
+            💣 remaining: {remainingBombs}
+          </Text>
+        </View>
         <Board
           cells={cells}
           onCellPress={handleCellPress}

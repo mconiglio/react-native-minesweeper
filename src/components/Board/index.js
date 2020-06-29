@@ -7,8 +7,17 @@ import styles from './styles';
 
 const Board = ({ cells, onCellPress, onCellLongPress }) => {
   return (
-    <ScrollView style={styles.container} horizontal>
-      <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.horizontalContainer}
+      contentContainerStyle={styles.horizontalContent}
+      bounces={false}
+      horizontal
+    >
+      <ScrollView
+        style={styles.verticalContainer}
+        contentContainerStyle={styles.grid}
+        bounces={false}
+      >
         {cells.map((row, rowNumber) => (
           <View style={styles.row} key={rowNumber}>
             {row.map((cell) => (

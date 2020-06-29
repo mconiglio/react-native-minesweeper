@@ -6,20 +6,18 @@ export default StyleSheet.create({
   container: {
     height: BoardConstants.cellSize,
     width: BoardConstants.cellSize,
-    backgroundColor: Colors.lighter,
-    textAlign: 'center',
+    backgroundColor: Colors.light,
     justifyContent: 'center',
-    alignContent: 'center',
   },
   containerVisible: {
     borderWidth: 1,
-    borderColor: Colors.light,
+    borderColor: Colors.grey,
   },
   containerHidden: {
     borderWidth: 3,
     borderTopColor: Colors.white,
-    borderRightColor: Colors.light,
-    borderBottomColor: Colors.light,
+    borderRightColor: Colors.grey,
+    borderBottomColor: Colors.grey,
     borderLeftColor: Colors.white,
   },
   label: {

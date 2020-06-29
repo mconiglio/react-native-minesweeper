@@ -3,10 +3,19 @@ import Colors from '../../constants/colors';
 
 export default StyleSheet.create({
   safeArea: {
-    backgroundColor: Colors.light,
+    backgroundColor: Colors.lighter,
   },
   container: {
     height: '100%',
     width: '100%',
+  },
+  remainingBombsContainer: {
+    alignItems: 'center',
+    paddingVertical: 15,
+  },
+  remainingBombs: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: Colors.white,
   },
 });
