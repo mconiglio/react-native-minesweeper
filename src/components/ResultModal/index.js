@@ -1,11 +1,18 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Dimensions, Easing, Modal, Text } from 'react-native';
+import {
+  Animated,
+  Button,
+  Dimensions,
+  Easing,
+  Modal,
+  Text,
+} from 'react-native';
 
 import styles from './styles';
 
 const { height: screenHeight } = Dimensions.get('screen');
 
-const ResultModal = ({ gameWon, onClose }) => {
+const ResultModal = ({ gameWon, onRetryPress }) => {
   const translateY = useRef(new Animated.Value(screenHeight));
   const scaleValue = useRef(new Animated.Value(0));
 
@@ -31,7 +38,7 @@ const ResultModal = ({ gameWon, onClose }) => {
   }, []);
 
   return (
-    <Modal onRequestClose={onClose} transparent visible>
+    <Modal onRequestClose={onRetryPress} transparent visible>
       <Animated.View
         style={[
           styles.container,
@@ -40,7 +47,7 @@ const ResultModal = ({ gameWon, onClose }) => {
       >
         <Animated.View style={[styles.messageBox, { transform: [{ scale }] }]}>
           <Text>{gameWon ? 'You Win' : 'You Lose'}</Text>
-          <Text>Retry</Text>
+          <Button title="Retry" onPress={onRetryPress} />
         </Animated.View>
       </Animated.View>
     </Modal>

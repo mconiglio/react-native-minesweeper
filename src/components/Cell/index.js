@@ -1,20 +1,18 @@
-import React, { memo, useState } from 'react';
+import React from 'react';
 import { TouchableOpacity, Text } from 'react-native';
 
 import styles from './styles';
 
-const Cell = memo(
-  function Cell({ cell: { x, y, revealed, hasBomb, bombsAround }, onPress }) {
-    const [flagged, setFlagged] = useState(false);
-
-    const handleLongPress = () => {
-      setFlagged((wasFlagged) => !wasFlagged);
-    };
-
+const Cell = React.memo(
+  function Cell({
+    cell: { x, y, revealed, flagged, hasBomb, bombsAround },
+    onPress,
+    onLongPress,
+  }) {
     return (
       <TouchableOpacity
         onPress={() => onPress(x, y)}
-        onLongPress={handleLongPress}
+        onLongPress={() => onLongPress(x, y)}
         activeOpacity={1}
         style={[
           styles.container,
@@ -31,7 +29,9 @@ const Cell = memo(
       </TouchableOpacity>
     );
   },
-  (prevProps, nextProps) => prevProps.cell.revealed === nextProps.cell.revealed
+  (prevProps, nextProps) =>
+    prevProps.cell.revealed === nextProps.cell.revealed &&
+    prevProps.cell.flagged === nextProps.cell.flagged
 );
 
 export default Cell;
