@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Alert } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import BoardConstants from '../../constants/board';
 import { buildGame } from '../../lib/boardBuilder';
@@ -8,7 +8,7 @@ import Cell from '../Cell';
 
 import styles from './styles';
 
-const Board = () => {
+const Board = ({ onGameEnd }) => {
   const [cells, setCells] = useState(buildGame());
 
   useEffect(() => {
@@ -27,9 +27,9 @@ const Board = () => {
       BoardConstants.columns * BoardConstants.rows - BoardConstants.bombsCount
     ) {
       revealAllCells();
-      Alert.alert('You win!');
+      onGameEnd(true);
     }
-  }, [cells]);
+  }, [cells, onGameEnd]);
 
   const handleCellPress = (x, y) => {
     const pressedCell = cells[y][x];
@@ -39,7 +39,7 @@ const Board = () => {
 
     if (pressedCell.hasBomb) {
       revealAllCells();
-      Alert.alert('Oops!');
+      onGameEnd(false);
     } else {
       revealCell(x, y);
     }
