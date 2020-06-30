@@ -20,7 +20,8 @@ export default StyleSheet.create({
     borderBottomColor: Colors.white,
     borderLeftColor: Colors.grey,
   },
-  row: {
+  rows: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 });
