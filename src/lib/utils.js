@@ -1,3 +1,10 @@
+export const randomPosition = (rowsCount, columnsCount) => {
+  return [
+    Math.floor(Math.random() * columnsCount),
+    Math.floor(Math.random() * rowsCount),
+  ];
+};
+
 export const adjacentPositions = (x, y, rowsCount, columnsCount) => {
   let positions = [];
 

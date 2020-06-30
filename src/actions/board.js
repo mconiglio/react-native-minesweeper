@@ -5,11 +5,6 @@ export const setBoard = (cells, difficulty) => ({
   payload: { cells, difficulty },
 });
 
-export const setGameResult = (won) => ({
-  type: Types.SET_GAME_RESULT,
-  payload: won,
-});
-
 export const revealCell = (x, y) => ({
   type: Types.REVEAL_CELL,
   payload: { x, y },

@@ -1,6 +1,7 @@
 import Types from '../actions/types';
 import createReducer from './createReducer';
 import BoardConstants from '../constants/board';
+import Minesweeper from '../lib/Minesweeper';
 import { positionsAroundToReveal } from '../lib/utils';
 
 const initialState = {
@@ -8,17 +9,26 @@ const initialState = {
   cells: null,
   completed: false,
   won: null,
+  gameStarted: false,
 };
 
 const setBoard = (_state, payload) => {
   const { cells, difficulty } = payload;
-  return { completed: false, won: null, cells, difficulty };
+  return { completed: false, won: null, gameStarted: false, cells, difficulty };
 };
 
 const revealCell = (state, payload) => {
-  const { cells, difficulty } = state;
+  let { cells, difficulty, gameStarted } = state;
   const { x, y } = payload;
   const { rows, columns, bombsCount } = BoardConstants.gameModes[difficulty];
+
+  if (!gameStarted) {
+    cells = swapIfBombOnFirstClick(cells, x, y);
+  }
+
+  if (cells[y][x].hasBomb) {
+    return { ...state, completed: true, won: false };
+  }
 
   let revealedCells = 0;
   const updatedCells = cells.map((row) =>
@@ -35,16 +45,30 @@ const revealCell = (state, payload) => {
   );
 
   if (revealedCells === rows * columns - bombsCount) {
-    return { ...state, cells: updatedCells, completed: true, won: true };
+    return {
+      ...state,
+      cells: updatedCells,
+      completed: true,
+      won: true,
+      gameStarted: true,
+    };
   }
 
-  return { ...state, cells: updatedCells };
+  return { ...state, cells: updatedCells, gameStarted: true };
 };
 
 const revealCellsAround = (state, payload) => {
-  const { cells, difficulty } = state;
+  let { cells, difficulty, gameStarted } = state;
   const { x, y } = payload;
   const { rows, columns, bombsCount } = BoardConstants.gameModes[difficulty];
+
+  if (!gameStarted) {
+    cells = swapIfBombOnFirstClick(cells, x, y);
+  }
+
+  if (cells[y][x].hasBomb) {
+    return { ...state, completed: true, won: false };
+  }
 
   const positionsToReveal = positionsAroundToReveal(x, y, cells);
   const updatedCells = cells.map((row) => row.map((cell) => ({ ...cell })));
@@ -62,10 +86,16 @@ const revealCellsAround = (state, payload) => {
   );
 
   if (revealedCells === rows * columns - bombsCount) {
-    return { ...state, cells: updatedCells, completed: true, won: true };
+    return {
+      ...state,
+      cells: updatedCells,
+      completed: true,
+      won: true,
+      gameStarted: true,
+    };
   }
 
-  return { ...state, cells: updatedCells };
+  return { ...state, cells: updatedCells, gameStarted: true };
 };
 
 const flagCell = (state, payload) => {
@@ -82,9 +112,12 @@ const flagCell = (state, payload) => {
   };
 };
 
-const completeGame = (state, payload) => {
-  const { won } = payload;
-  return { ...state, completed: true, won };
+const swapIfBombOnFirstClick = (board, clickedX, clickedY) => {
+  const clickedPosition = board[clickedY][clickedX];
+  if (!clickedPosition.hasBomb) {
+    return board;
+  }
+  return Minesweeper.relocateBomb(board, clickedX, clickedY);
 };
 
 const handlers = {
@@ -92,7 +125,6 @@ const handlers = {
   [Types.REVEAL_CELL]: revealCell,
   [Types.REVEAL_CELLS_AROUND]: revealCellsAround,
   [Types.FLAG_CELL]: flagCell,
-  [Types.SET_GAME_RESULT]: completeGame,
 };
 
 export default createReducer(initialState, handlers);

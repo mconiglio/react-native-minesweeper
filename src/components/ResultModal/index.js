@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import { buildGame } from '../../lib/boardBuilder';
+import Minesweeper from '../../lib/Minesweeper';
 import { setBoard } from '../../actions/board';
 
 import styles from './styles';
@@ -52,7 +52,9 @@ const ResultModal = () => {
   }, [gameCompleted]);
 
   const handleRetryPress = () => {
-    dispatch(setBoard(buildGame(difficulty), difficulty));
+    const game = new Minesweeper();
+    const board = game.buildGame(difficulty);
+    dispatch(setBoard(board, difficulty));
   };
 
   if (!gameCompleted) {

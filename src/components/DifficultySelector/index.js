@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 import BoardConstants from '../../constants/board';
-import { buildGame } from '../../lib/boardBuilder';
+import Minesweeper from '../../lib/Minesweeper';
 import { setBoard } from '../../actions/board';
 
 import styles from './styles';
@@ -12,7 +12,9 @@ const DifficultySelector = () => {
   const dispatch = useDispatch();
 
   const handleSelect = (difficulty) => {
-    dispatch(setBoard(buildGame(difficulty), difficulty));
+    const game = new Minesweeper();
+    const board = game.buildGame(difficulty);
+    dispatch(setBoard(board, difficulty));
   };
 
   return (

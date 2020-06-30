@@ -2,12 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text } from 'react-native';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
-import {
-  flagCell,
-  revealCell,
-  revealCellsAround,
-  setGameResult,
-} from '../../actions/board';
+import { flagCell, revealCell, revealCellsAround } from '../../actions/board';
 
 import styles from './styles';
 
@@ -25,14 +20,11 @@ const Cell = ({ x, y }) => {
     if (flagged || revealed) {
       return;
     }
-    if (hasBomb) {
-      dispatch(setGameResult(false));
+
+    if (bombsAround === 0) {
+      dispatch(revealCellsAround(x, y));
     } else {
-      if (bombsAround === 0) {
-        dispatch(revealCellsAround(x, y));
-      } else {
-        dispatch(revealCell(x, y));
-      }
+      dispatch(revealCell(x, y));
     }
   };
 
