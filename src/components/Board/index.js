@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
+import { useSelector } from 'react-redux';
 
 import Cell from '../Cell';
 
@@ -7,10 +8,16 @@ import BoardConstants from '../../constants/board';
 
 import styles from './styles';
 
-const Board = ({ cells, onCellPress, onCellLongPress }) => {
-  const flattenedCells = cells.reduce((rows, row) => {
-    return rows.concat(row);
-  });
+const Board = () => {
+  const difficulty = useSelector(({ board }) => board.difficulty);
+  const { columns, rows } = BoardConstants.gameModes[difficulty];
+  let cells = [];
+
+  for (let i = 0; i < columns; i++) {
+    for (let j = 0; j < rows; j++) {
+      cells.push(<Cell key={`cell-${i}-${j}`} x={i} y={j} />);
+    }
+  }
 
   return (
     <ScrollView
@@ -25,19 +32,9 @@ const Board = ({ cells, onCellPress, onCellLongPress }) => {
         bounces={false}
       >
         <View
-          style={[
-            styles.rows,
-            { width: cells[0].length * BoardConstants.cellSize },
-          ]}
+          style={[styles.rows, { width: columns * BoardConstants.cellSize }]}
         >
-          {flattenedCells.map((cell) => (
-            <Cell
-              key={`cell-${cell.x}-${cell.y}`}
-              cell={cell}
-              onPress={onCellPress}
-              onLongPress={onCellLongPress}
-            />
-          ))}
+          {cells}
         </View>
       </ScrollView>
     </ScrollView>

@@ -7,38 +7,60 @@ import {
   Modal,
   Text,
 } from 'react-native';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+
+import { buildGame } from '../../lib/boardBuilder';
+import { setBoard } from '../../actions/board';
 
 import styles from './styles';
 
 const { height: screenHeight } = Dimensions.get('screen');
 
-const ResultModal = ({ gameWon, onRetryPress }) => {
+const ResultModal = () => {
   const translateY = useRef(new Animated.Value(screenHeight));
   const scaleValue = useRef(new Animated.Value(0));
-
   const scale = scaleValue.current.interpolate({
     inputRange: [0, 0.5, 1],
     outputRange: [1, 1.4, 1],
   });
+  const dispatch = useDispatch();
+  const { difficulty, gameCompleted, gameWon } = useSelector(
+    ({ board: { difficulty: gameDifficulty, completed, won } }) => ({
+      difficulty: gameDifficulty,
+      gameCompleted: completed,
+      gameWon: won,
+    }),
+    shallowEqual
+  );
 
   useEffect(() => {
-    Animated.sequence([
-      Animated.timing(translateY.current, {
-        toValue: 0,
-        duration: 1000,
-        easing: Easing.bezier(0.0, 0.0, 0.2, 1),
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleValue.current, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
+    if (gameCompleted) {
+      Animated.sequence([
+        Animated.timing(translateY.current, {
+          toValue: 0,
+          duration: 1000,
+          easing: Easing.bezier(0.0, 0.0, 0.2, 1),
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleValue.current, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [gameCompleted]);
+
+  const handleRetryPress = () => {
+    dispatch(setBoard(buildGame(difficulty), difficulty));
+  };
+
+  if (!gameCompleted) {
+    return null;
+  }
 
   return (
-    <Modal onRequestClose={onRetryPress} transparent visible>
+    <Modal onRequestClose={handleRetryPress} transparent visible>
       <Animated.View
         style={[
           styles.container,
@@ -47,7 +69,7 @@ const ResultModal = ({ gameWon, onRetryPress }) => {
       >
         <Animated.View style={[styles.messageBox, { transform: [{ scale }] }]}>
           <Text>{gameWon ? 'You Win' : 'You Lose'}</Text>
-          <Button title="Retry" onPress={onRetryPress} />
+          <Button title="Retry" onPress={handleRetryPress} />
         </Animated.View>
       </Animated.View>
     </Modal>

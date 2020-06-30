@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { SafeAreaView } from 'react-native';
+import { useSelector } from 'react-redux';
 
 import Game from '../Game';
 import DifficultySelector from '../DifficultySelector';
@@ -7,22 +8,13 @@ import DifficultySelector from '../DifficultySelector';
 import styles from './styles';
 
 const App = () => {
-  const [difficulty, setDifficulty] = useState(null);
-
-  const handleResetDifficulty = () => {
-    setDifficulty(null);
-  };
+  const boardInitialized = useSelector(
+    ({ board: { cells } }) => cells !== null
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      {difficulty ? (
-        <Game
-          difficulty={difficulty}
-          onResetDifficulty={handleResetDifficulty}
-        />
-      ) : (
-        <DifficultySelector onSelect={setDifficulty} />
-      )}
+      {boardInitialized ? <Game /> : <DifficultySelector />}
     </SafeAreaView>
   );
 };
