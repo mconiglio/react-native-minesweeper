@@ -70,7 +70,7 @@ const ResultModal = () => {
         ]}
       >
         <Animated.View style={[styles.messageBox, { transform: [{ scale }] }]}>
-          <Text>{gameWon ? 'You Win' : 'You Lose'}</Text>
+          <Text style={styles.title}>{gameWon ? 'You Win' : 'You Lose'}</Text>
           <Button title="Retry" onPress={handleRetryPress} />
         </Animated.View>
       </Animated.View>
