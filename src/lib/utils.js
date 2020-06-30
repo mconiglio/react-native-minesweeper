@@ -36,29 +36,36 @@ export const gameWon = (board, difficulty) => {
 };
 
 export const positionsToRecursivelyReveal = (x, y, board) => {
-  if (board[y][x].visited) {
-    return [];
-  }
-
-  board[y][x].visited = true;
-
-  if (board[y][x].bombsAround > 0) {
-    return [[x, y]];
-  }
-
   const rowsCount = board.length;
   const columnsCount = board[0].length;
-  const neighbors = adjacentPositions(x, y, rowsCount, columnsCount);
-  const positionsToVisit = neighbors.filter(
-    ([adjX, adjY]) =>
-      !board[adjY][adjX].visited &&
-      !board[adjY][adjX].revealed &&
-      !board[adjY][adjX].hasBomb
-  );
+  let positionsToVisit = [[x, y]];
+  let positionsToReveal = [];
 
-  return positionsToVisit.reduce(
-    (positionsToReveal, [adjX, adjY]) =>
-      positionsToReveal.concat(positionsToRecursivelyReveal(adjX, adjY, board)),
-    [[x, y]]
-  );
+  while (positionsToVisit.length !== 0) {
+    const [posX, posY] = positionsToVisit.shift();
+    let currentPosition = board[posY][posX];
+
+    if (currentPosition.visited) {
+      continue;
+    }
+
+    currentPosition.visited = true;
+    positionsToReveal.push([currentPosition.x, currentPosition.y]);
+
+    if (currentPosition.bombsAround > 0) {
+      continue;
+    }
+
+    const neighbors = adjacentPositions(posX, posY, rowsCount, columnsCount);
+    positionsToVisit.push(
+      ...neighbors.filter(
+        ([adjX, adjY]) =>
+          !board[adjY][adjX].visited &&
+          !board[adjY][adjX].revealed &&
+          !board[adjY][adjX].hasBomb
+      )
+    );
+  }
+
+  return positionsToReveal;
 };
