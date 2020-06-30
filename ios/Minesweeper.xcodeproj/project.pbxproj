@@ -161,7 +161,6 @@
 				21DFB1C2528360C3892C1BEF /* Pods-Minesweeper-tvOSTests.debug.xcconfig */,
 				CEE2986048014D77C6343014 /* Pods-Minesweeper-tvOSTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
