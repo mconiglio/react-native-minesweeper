@@ -1,6 +1,6 @@
 import BoardConstants from '../constants/board';
 
-export const adjacentPositions = (x, y) => {
+export const adjacentPositions = (x, y, rowsCount, columnsCount) => {
   let positions = [];
 
   for (let i = x - 1; i <= x + 1; i++) {
@@ -9,8 +9,8 @@ export const adjacentPositions = (x, y) => {
         (i !== x || j !== y) &&
         i >= 0 &&
         j >= 0 &&
-        i < BoardConstants.columns &&
-        j < BoardConstants.rows
+        i < columnsCount &&
+        j < rowsCount
       ) {
         positions.push([i, j]);
       }
@@ -18,6 +18,21 @@ export const adjacentPositions = (x, y) => {
   }
 
   return positions;
+};
+
+export const gameWon = (board, difficulty) => {
+  let revealedCells = 0;
+  const { rows, columns, bombsCount } = BoardConstants.gameModes[difficulty];
+
+  board.forEach((row) =>
+    row.forEach((cell) => {
+      if (cell.revealed) {
+        revealedCells++;
+      }
+    })
+  );
+
+  return revealedCells === rows * columns - bombsCount;
 };
 
 export const positionsToRecursivelyReveal = (x, y, board) => {
@@ -31,7 +46,9 @@ export const positionsToRecursivelyReveal = (x, y, board) => {
     return [[x, y]];
   }
 
-  const neighbors = adjacentPositions(x, y);
+  const rowsCount = board.length;
+  const columnsCount = board[0].length;
+  const neighbors = adjacentPositions(x, y, rowsCount, columnsCount);
   const positionsToVisit = neighbors.filter(
     ([adjX, adjY]) =>
       !board[adjY][adjX].visited &&

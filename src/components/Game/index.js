@@ -1,42 +1,32 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { SafeAreaView, View, Text } from 'react-native';
+import { View } from 'react-native';
 
 import Board from '../Board';
+import Header from './Header';
 import ResultModal from '../ResultModal';
 
 import BoardConstants from '../../constants/board';
 import { buildGame } from '../../lib/boardBuilder';
-import { positionsToRecursivelyReveal } from '../../lib/utils';
+import { gameWon, positionsToRecursivelyReveal } from '../../lib/utils';
 
 import styles from './styles';
 
-const Game = () => {
+const Game = ({ difficulty, onResetDifficulty }) => {
   const [gameStatus, setGameStatus] = useState({ ended: false, won: false });
-  const [cells, setCells] = useState(buildGame());
+  const [cells, setCells] = useState(buildGame(difficulty));
   const remainingBombs = useMemo(() => {
     const flaggedCells = cells.flat().filter((cell) => cell.flagged);
-    return BoardConstants.bombsCount - flaggedCells.length;
-  }, [cells]);
+    const { bombsCount } = BoardConstants.gameModes[difficulty];
+
+    return bombsCount - flaggedCells.length;
+  }, [difficulty, cells]);
 
   useEffect(() => {
-    let revealedCells = 0;
-
-    cells.forEach((row) =>
-      row.forEach((cell) => {
-        if (cell.revealed) {
-          revealedCells++;
-        }
-      })
-    );
-
-    if (
-      revealedCells ===
-      BoardConstants.columns * BoardConstants.rows - BoardConstants.bombsCount
-    ) {
+    if (gameWon(cells, difficulty)) {
       setGameStatus({ ended: true, won: true });
       revealAllCells();
     }
-  }, [cells]);
+  }, [cells, difficulty]);
 
   const revealAllCells = () => {
     setCells((prevCells) =>
@@ -91,30 +81,24 @@ const Game = () => {
 
   const handleRetryPress = () => {
     setGameStatus({ ended: false, won: false });
-    setCells(buildGame());
+    setCells(buildGame(difficulty));
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.remainingBombsContainer}>
-          <Text style={styles.remainingBombs}>
-            💣 remaining: {remainingBombs}
-          </Text>
-        </View>
-        <Board
-          cells={cells}
-          onCellPress={handleCellPress}
-          onCellLongPress={handleCellLongPress}
-        />
-        {gameStatus.ended && (
-          <ResultModal
-            gameWon={gameStatus.won}
-            onRetryPress={handleRetryPress}
-          />
-        )}
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <Header
+        remainingBombs={remainingBombs}
+        onResetDifficulty={onResetDifficulty}
+      />
+      <Board
+        cells={cells}
+        onCellPress={handleCellPress}
+        onCellLongPress={handleCellLongPress}
+      />
+      {gameStatus.ended && (
+        <ResultModal gameWon={gameStatus.won} onRetryPress={handleRetryPress} />
+      )}
+    </View>
   );
 };
 

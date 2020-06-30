@@ -5,16 +5,21 @@ export default StyleSheet.create({
   container: {
     height: '100%',
     width: '100%',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    padding: 15,
+    backgroundColor: Colors.lighter,
   },
-  headerText: {
-    fontSize: 20,
+  title: {
+    fontSize: 24,
     fontWeight: '800',
+    marginBottom: 20,
+  },
+  button: {
+    marginVertical: 20,
+  },
+  buttonLabel: {
+    fontSize: 20,
+    fontWeight: '700',
     color: Colors.white,
   },
 });

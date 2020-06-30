@@ -1,21 +1,23 @@
 import BoardConstants from '../constants/board';
 import { adjacentPositions } from './utils';
 
-export const buildGame = () => {
-  const emptyBoard = buildBoard();
-  const boardWithBombs = plantBombs(emptyBoard);
+export const buildGame = (difficulty) => {
+  const { rows, columns, bombsCount } = BoardConstants.gameModes[difficulty];
+
+  const emptyBoard = buildBoard(rows, columns);
+  const boardWithBombs = plantBombs(emptyBoard, bombsCount);
   const gameBoard = setBombsAround(boardWithBombs);
 
   return gameBoard;
 };
 
-const buildBoard = () => {
+const buildBoard = (rows, columns) => {
   // TODO: refactor
   let board = [];
 
-  for (let i = 0; i < BoardConstants.rows; i++) {
+  for (let i = 0; i < rows; i++) {
     board.push([]);
-    for (let j = 0; j < BoardConstants.columns; j++) {
+    for (let j = 0; j < columns; j++) {
       board[i][j] = {
         x: j,
         y: i,
@@ -30,12 +32,11 @@ const buildBoard = () => {
   return board;
 };
 
-const plantBombs = (board) => {
-  // TODO: make pure function
-  if (
-    BoardConstants.bombsCount < 1 ||
-    BoardConstants.rows * BoardConstants.columns <= BoardConstants.bombsCount
-  ) {
+const plantBombs = (board, bombsCount) => {
+  const rowsCount = board.length;
+  const columnsCount = board[0].length;
+
+  if (bombsCount < 1 || rowsCount * columnsCount <= bombsCount) {
     throw new Error(
       'Bombs count should be a positive number lower than the available cells count'
     );
@@ -43,9 +44,9 @@ const plantBombs = (board) => {
 
   let bombsPlanted = 0;
 
-  while (bombsPlanted < BoardConstants.bombsCount) {
-    const yPos = Math.floor(Math.random() * BoardConstants.rows);
-    const xPos = Math.floor(Math.random() * BoardConstants.columns);
+  while (bombsPlanted < bombsCount) {
+    const yPos = Math.floor(Math.random() * rowsCount);
+    const xPos = Math.floor(Math.random() * columnsCount);
     if (!board[yPos][xPos].hasBomb) {
       board[yPos][xPos].hasBomb = true;
       bombsPlanted++;
@@ -56,9 +57,11 @@ const plantBombs = (board) => {
 };
 
 const setBombsAround = (board) => {
-  // TODO: make pure function
-  for (let i = 0; i < BoardConstants.rows; i++) {
-    for (let j = 0; j < BoardConstants.columns; j++) {
+  const rowsCount = board.length;
+  const columnsCount = board[0].length;
+
+  for (let i = 0; i < rowsCount; i++) {
+    for (let j = 0; j < columnsCount; j++) {
       if (!board[i][j].hasBomb) {
         const bombCount = getBombCountFromCell(
           board[i][j].x,
@@ -74,7 +77,10 @@ const setBombsAround = (board) => {
 };
 
 const getBombCountFromCell = (x, y, board) => {
-  return adjacentPositions(x, y).reduce(
+  const rowsCount = board.length;
+  const columnsCount = board[0].length;
+
+  return adjacentPositions(x, y, rowsCount, columnsCount).reduce(
     (bombCount, [i, j]) => (board[j][i].hasBomb ? bombCount + 1 : bombCount),
     0
   );
