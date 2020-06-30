@@ -3,6 +3,7 @@ import Colors from '../../constants/colors';
 
 export default StyleSheet.create({
   horizontalContainer: {
+    flexGrow: 0,
     marginHorizontal: 20,
   },
   horizontalContent: {

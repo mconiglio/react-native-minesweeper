@@ -10,8 +10,8 @@ const gameModes = {
     bombsCount: 40,
   },
   expert: {
-    columns: 16,
-    rows: 30,
+    columns: 30,
+    rows: 16,
     bombsCount: 99,
   },
 };
