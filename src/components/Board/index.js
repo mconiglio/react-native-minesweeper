@@ -13,8 +13,8 @@ const Board = () => {
   const { columns, rows } = BoardConstants.gameModes[difficulty];
   let cells = [];
 
-  for (let i = 0; i < columns; i++) {
-    for (let j = 0; j < rows; j++) {
+  for (let j = 0; j < rows; j++) {
+    for (let i = 0; i < columns; i++) {
       cells.push(<Cell key={`cell-${i}-${j}`} x={i} y={j} />);
     }
   }

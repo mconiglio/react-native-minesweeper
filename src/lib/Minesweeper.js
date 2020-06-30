@@ -26,7 +26,7 @@ class Minesweeper {
     }
 
     boardCopy[ignoredY][ignoredX].hasBomb = false;
-    adjacentPositions(ignoredY, ignoredX, rowsCount, columnsCount).forEach(
+    adjacentPositions(ignoredX, ignoredY, rowsCount, columnsCount).forEach(
       ([adjX, adjY]) => {
         boardCopy[adjY][adjX].bombsAround--;
       }
